@@ -1,162 +1,169 @@
-import React, { useState, useEffect } from 'react';
-  import {
-    SafeAreaView,
-    View,
-    Text,
-    Button,
-    StyleSheet,
-    PermissionsAndroid ,
-    FlatList,
-  } from 'react-native';
-  import BleManager from 'react-native-ble-plx';
-  import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
-  import DeviceInfo from 'react-native-device-info';
-    
-  const requestPermissions = async () => {
-    if (Platform.OS === 'android') {
-      const apiLevel = await DeviceInfo.getApiLevel();
-      if (apiLevel < 31) {
-        const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'Bluetooth Low Energy requires Location',
-          buttonNeutral: 'Ask Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      } else {
-        const result = await requestMultiple([
-          PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-          PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
-          PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-        ]);
-    
-        const isGranted =
-          result['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED &&
-          result['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED &&
-          result['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED;
-    }
-    
-  }
-};
-    
-    const App = () => {
-    const [devices, setDevices] = useState([]);
-    const [scanning, setScanning] = useState(false);
-    const [bleManager, setBleManager] = useState(null);
-    
-    function requestBluetoothPermissions(cb) {
-    if (Platform.OS === 'android') {
-    DeviceInfo.getApiLevel().then((apiLevel) => {
-    if (apiLevel < 31) {
-    PermissionsAndroid.request(
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-    {
-    title: 'Location Permission',
-    message: 'Bluetooth Low Energy requires Location',
-    buttonNeutral: 'Ask Later',
-    buttonNegative: 'Cancel',
-    buttonPositive: 'OK',
-    },
-    ).then((granted) => {
-    cb(granted === PermissionsAndroid.RESULTS.GRANTED);
-    });
-    } else {
-    requestMultiple([
-    PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-    PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
-    PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
-    ]).then((result) => {
-    const isGranted =
-    result['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED &&
-    result['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED &&
-    result['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED;
-    cb(isGranted);
-    });
-    }
-    });
-    } else {
-    cb(true);
-    }
-    }
-    
-    useEffect(() => {
-        if (!bleManager) {
-        requestBluetoothPermissions((isGranted) => {
-        if (isGranted) {
-        const manager = new BleManager();
-        setBleManager(manager);
-        manager.startDeviceScan(  [serialUUIDs.serviceUUID],
-          {scanMode: ScanMode.LowLatency}, (error, device) => {
-        if (error) {
-        console.log(error.message);
-        return;
-        }
-    
-        console.log(device.name);
-        console.log(device.id);
-    
-        if (device.name) {
-          setDevices((prevDevices) => [...prevDevices, device]);
-        }
-        });
-        setScanning(true);
-        }
-        });
-        }
-    }, []);
-    
-    return (
-    <SafeAreaView>
-      <View>
-          {scanning ? (
-          <Button
-          title="Stop Scanning"
-          onPress={() => {
-          bleManager.stopDeviceScan();
-          setScanning(false);
-          }}
-          />
-          ) : (
-          <Button
-          title="Start Scanning"
-          onPress={() => {
-          requestBluetoothPermissions((isGranted) => {
-          if (isGranted) {
-          setDevices([]);
-          bleManager.startDeviceScan([serialUUIDs.serviceUUID],
-            {scanMode: ScanMode.LowLatency},(error, device) => {
-          if (error) {
-          console.log(error.message);
-          return;
-          }
-          console.log(device.name);
-          console.log(device.id);
-    
-          if (device.name) {
-            setDevices((prevDevices) => [...prevDevices, device]);
-          }
-          });
-          setScanning(true);
-          }
-          });
-          }}
-          />
-          )}
-      </View>
-        <FlatList
-        data={devices}
-        renderItem={({ item }) => (
-        <Text>
-        {item.name} ({item.id})
-        </Text>
-        )}
-        keyExtractor={(item) => item.id}
-        />
-    </SafeAreaView>
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Touchable, StyleSheet, PermissionsAndroid, Platform } from 'react-native';
+import useBluetooth from './useBluetooth';
+import RNBluetoothClassic from 'react-native-bluetooth-classic';
+import * as ExpoDevice from "expo-device";
+
+export default function Home() {
+
+/*
+  Login interface: CNP + Password
+  fetch('http://162.0.238.94/api', {
+  method: 'POST',
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    firstParam: 'yourValue',
+    secondParam: 'yourOtherValue',
+  }),
+});
+*/
+
+/*
+  Connect Smartphone to Arduino
+  Request permission for Android => We already have it in project from C:\Users\MPSAM\Documents\WRBL\Smartphone
+  Implement scan and pair
+*/
+
+  const requestAndroid31Permissions = async () => {
+    const bluetoothScanPermission = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+      {
+        title: "Location Permission",
+        message: "Bluetooth Low Energy requires Location",
+        buttonPositive: "OK",
+      }
     );
-    };
-    
-    export default App;
+    const bluetoothConnectPermission = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+      {
+        title: "Location Permission",
+        message: "Bluetooth Low Energy requires Location",
+        buttonPositive: "OK",
+      }
+    );
+    const fineLocationPermission = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: "Location Permission",
+        message: "Bluetooth Low Energy requires Location",
+        buttonPositive: "OK",
+      }
+    );
+
+    return (
+      bluetoothScanPermission === "granted" &&
+      bluetoothConnectPermission === "granted" &&
+      fineLocationPermission === "granted"
+    );
+  };
+
+  const requestPermissions = async () => {
+    if (Platform.OS === "android") {
+      if ((ExpoDevice.platformApiLevel ?? -1) < 31) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+          {
+            title: "Location Permission",
+            message: "Bluetooth Low Energy requires Location",
+            buttonPositive: "OK",
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } else {
+        const isAndroid31PermissionsGranted =
+          await requestAndroid31Permissions();
+
+        return isAndroid31PermissionsGranted;
+      }
+    } else {
+      return true;
+    }
+  };
+
+
+  const onReceivedDataScan = useCallback((data) => {
+    console.log('data?.data', data?.data); // ========> Get response here
+    alert(data?.data);
+  }, []);
+
+
+  const { connection, setDevice, data, } = useBluetooth(onReceivedDataScan);
+
+  useEffect(() => {
+    fetch('http://162.0.238.94/api', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstParam: 'yourValue',
+        secondParam: 'yourOtherValue',
+      }),
+    }).then(function(response) {
+      response.body.getReader().read().then(function(stream) {
+        console.log(stream.value);
+      });
+    });
+    scanForDevices();
+  }, []);
+
+  const getBondedDevices = async () => {
+    console.log('-- GETTING BONDED DEVICES --');
+    try {
+      const listBondedDevices = await RNBluetoothClassic.getBondedDevices();
+      console.log(listBondedDevices);
+      const dv = listBondedDevices?.find(e => e.id === "F4:5E:AB:DB:1F:B9");
+      setDevice(dv);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const scanForDevices = async () => {
+    console.log('-- SCANNING FOR DEVICES --');
+    try {
+      RNBluetoothClassic.startDiscovery().then(function(devices){
+        for(var i = 0; i < devices.length; i++)
+        {
+          if(devices[i].name == "WRBL" && devices[i].address == "00:06:66:F2:34:9F") {
+            console.log(devices[i].name + " " + devices[i].address);
+            RNBluetoothClassic.pairDevice(devices[i].address).then(function(device){
+              console.log("Pair successfull");
+            });
+          }
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  paragraph: {
+    margin: 24,
+    marginTop: 0,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  logo: {
+    height: 128,
+    width: 128,
+  }
+});
