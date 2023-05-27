@@ -95,15 +95,44 @@ class CreateTablePacienti extends Migration
            'alergii' => [
             'type' => 'VARCHAR',
             'constraint' => 255,
+           ],
+           'created_at' => [
+               'type' => 'DATE',
+               'default' => date('d-M-y')
+           ],
+           'updated_at' => [
+               'type' => 'DATE',
+               'default' => date('d-M-y')
+           ],
+           'deleted_at' => [
+               'type' => 'DATE',
+               'default' => '',
+               'null' => true
            ]
 
         ]);
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('id', 'DOCTORI', 'id', '', '');
         $this->forge->createTable('PACIENTI');
+        $this->db->query("
+            CREATE OR REPLACE TRIGGER TRIGGER_PACIENTI\r\n
+            BEFORE INSERT ON PACIENTI\r\n
+            FOR EACH ROW\r\n
+            DECLARE NEW_ID NUMBER(20);\r\n
+            BEGIN\r\n
+                SELECT COUNT(*) INTO NEW_ID FROM PACIENTI;\r\n
+                IF NEW_ID = 0 THEN\r\n
+                    :NEW.\"id\" := 0;\r\n
+                ELSE\r\n
+                    SELECT MAX(\"id\") INTO NEW_ID FROM PACIENTI;\r\n
+                    :NEW.\"id\" := NEW_ID+1;\r\n
+                END IF;\r\n
+            END;\r\n
+        ");
    }
 
    public function down() {
        $this->forge->dropTable('PACIENTI');
+       $this->db->query('DROP TRIGGER TRIGGER_PACIENTI');
    }
 }

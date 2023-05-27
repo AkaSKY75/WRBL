@@ -69,14 +69,43 @@ class CreateTableAdministratori extends Migration
            'email' => [
             'type' => 'VARCHAR',
             'constraint' => 255,
+           ],
+           'created_at' => [
+               'type' => 'DATE',
+               'default' => date('d-M-y')
+           ],
+           'updated_at' => [
+               'type' => 'DATE',
+               'default' => date('d-M-y')
+           ],
+           'deleted_at' => [
+               'type' => 'DATE',
+               'default' => '',
+               'null' => true
            ]
 
         ]);
         $this->forge->addKey('id', true);
         $this->forge->createTable('ADMINISTRATORI');
+        $this->db->query("
+            CREATE OR REPLACE TRIGGER TRIGGER_ADMINISTRATORI\r\n
+            BEFORE INSERT ON ADMINISTRATORI\r\n
+            FOR EACH ROW\r\n
+            DECLARE NEW_ID NUMBER(20);\r\n
+            BEGIN\r\n
+                SELECT COUNT(*) INTO NEW_ID FROM ADMINISTRATORI;\r\n
+                IF NEW_ID = 0 THEN\r\n
+                    :NEW.\"id\" := 0;\r\n
+                ELSE\r\n
+                    SELECT MAX(\"id\") INTO NEW_ID FROM ADMINISTRATORI;\r\n
+                    :NEW.\"id\" := NEW_ID+1;\r\n
+                END IF;\r\n
+            END;\r\n
+        ");
    }
 
    public function down() {
        $this->forge->dropTable('ADMINISTRATORI');
+       $this->db->query('DROP TRIGGER ADMINISTRATORI');
    }
 }
