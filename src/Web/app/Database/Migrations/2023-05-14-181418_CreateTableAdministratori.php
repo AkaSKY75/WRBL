@@ -106,6 +106,5 @@ class CreateTableAdministratori extends Migration
 
    public function down() {
        $this->forge->dropTable('ADMINISTRATORI');
-       $this->db->query('DROP TRIGGER ADMINISTRATORI');
    }
 }

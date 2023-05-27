@@ -14,7 +14,7 @@ class Pacient extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['parola', 'doctor', 'nume', 'prenume', 'varsta', 'cnp', 'localitate', 'judet', 'strada', 'bloc', 'scara', 'etaj', 'apartament', 'numar', 'telefon', 'email', 'profesie', 'loc_de_munca', 'istoric_medical', 'alergii'];
+    protected $allowedFields = ['parola', 'id_doctor', 'nume', 'prenume', 'varsta', 'cnp', 'localitate', 'judet', 'strada', 'bloc', 'scara', 'etaj', 'apartament', 'numar', 'telefon', 'email', 'profesie', 'loc_de_munca', 'istoric_medical', 'alergii', 'created_at', 'updated_at', 'deleted_at'];
 
     // Dates
     protected $useTimestamps = false;

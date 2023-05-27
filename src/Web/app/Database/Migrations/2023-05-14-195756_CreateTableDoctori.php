@@ -18,7 +18,7 @@ class CreateTableDoctori extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 64,
            ],
-           'administrator' => [
+           'id_administrator' => [
             'type' => 'INT',
             'constraint' => 5,
             'unsigned' => true
@@ -95,7 +95,7 @@ class CreateTableDoctori extends Migration
 
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('id', 'ADMINISTRATORI', 'id', '', '');
+        $this->forge->addForeignKey('id_administrator', 'ADMINISTRATORI', 'id', '', '');
         $this->forge->createTable('DOCTORI');
         $this->db->query("
             CREATE OR REPLACE TRIGGER TRIGGER_DOCTORI\r\n
@@ -116,6 +116,5 @@ class CreateTableDoctori extends Migration
 
    public function down() {
        $this->forge->dropTable('DOCTORI');
-       $this->db->query('DROP TRIGGER TRIGGER_DOCTORI');
    }
 }

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Administrator extends Model
+class Valori_Senzori extends Model
 {
-    protected $table      = 'ADMINISTRATORI';
+    protected $table      = 'VALORI_SENZORI';
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
@@ -14,7 +14,7 @@ class Administrator extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['id', 'parola', 'nume', 'prenume', 'cnp', 'localitate', 'judet', 'strada', 'bloc', 'scara', 'etaj', 'apartament', 'numar', 'telefon', 'email', 'created_at', 'updated_at', 'deleted_at'];
+    protected $allowedFields = ['id_pacient', 'data', 'val_senzor_puls', 'val_senzor_temperatura', 'val_senzor_umiditate', 'val_senzor_ecg', 'created_at', 'updated_at', 'deleted_at'];
 
     // Dates
     protected $useTimestamps = false;
