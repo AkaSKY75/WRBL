@@ -4,18 +4,16 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Administrator extends Model
+class Trimiteri extends Model
 {
     protected $DBGroup          = 'default';
-    protected $table      = 'ADMINISTRATORI';
-    protected $primaryKey = 'id';
-
+    protected $table            = 'TRIMITERi';
+    protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-
-    protected $returnType     = 'array';
-    protected $useSoftDeletes = true;
-
-    protected $allowedFields = ['id', 'parola', 'nume', 'prenume', 'cnp', 'localitate', 'judet', 'strada', 'bloc', 'scara', 'etaj', 'apartament', 'numar', 'telefon', 'email', 'created_at', 'updated_at', 'deleted_at'];
+    protected $returnType       = 'array';
+    protected $useSoftDeletes   = false;
+    protected $protectFields    = true;
+    protected $allowedFields    = ['resourceType', 'identifier', 'instantiatesCanonical', 'instantiatesUri', 'basedOn', 'replaces', 'requisition', 'status', 'intent', 'category', 'priority', 'code', 'orderDetail', 'quantityQuantity', 'quantityRatio', 'quantityRange', 'subject', 'focus', 'encounter', 'occurrenceDateTime', 'occurrencePeriod', 'occurrenceTiming', 'asNeededBoolean', 'asNeededCodeableConcept', 'authoredOn', 'requester', 'performerType', 'performer', 'location', 'reason', 'insurance', 'supportingInfo', 'specimen', 'bodySite', 'bodyStructure', 'note', 'patientInstruction', 'relevantHistory', 'created_at', 'updated_at', 'deleted_at'];
 
     // Dates
     protected $useTimestamps = false;
@@ -41,5 +39,3 @@ class Administrator extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 }
-
-?>

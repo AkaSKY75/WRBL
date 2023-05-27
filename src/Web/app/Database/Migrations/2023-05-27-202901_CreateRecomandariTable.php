@@ -4,49 +4,38 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateValoriSenzoriTable extends Migration
+class CreateRecomandariTable extends Migration
 {
     public function up()
     {
         $this->forge->addField([
             'id' => [
-                 'type' => 'INT',
-                 'constraint' => 5,
-                 'unsigned' => true,
-                 'auto_increment' => true,
+                'type' => 'INT',
+                'constraint' => 5,
+                'unsigned' => true,
+                'auto_increment' => true,
             ],
             'id_pacient' => [
                 'type' => 'INT',
                 'constraint' => 5,
                 'unsigned' => true,
-           ],
-           'val_senzor_puls' => [
-                'type' => 'INT',
-                'constraint' => 3,
-                'unsigned' => true
-           ],
-           'val_senzor_temperatura' => [
-                'type' => 'INT',
-                'constraint' => '4,2',
-           ],
-           'val_senzor_umiditate' => [
-                'type' => 'INT',
-                'constraint' => '4,2',
-           ],
-           'val_senzor_ecg' => [
-                'type' => 'LONG RAW',
             ],
-            'accelerometru_x' => [
+            'id_doctor' => [
                 'type' => 'INT',
-                'constraint' => '4,2'
+                'constraint' => 5,
+                'unsigned' => true,
             ],
-            'accelerometru_y' => [
-                'type' => 'INT',
-                'constraint' => '4,2'
+            'tip' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255'
             ],
-            'accelerometru_z' => [
+            'durata' => [
                 'type' => 'INT',
-                'constraint' => '4,2'
+                'constraint' => 4
+            ],
+            'alte_indicatii' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255'
             ],
             'created_at' => [
                 'type' => 'DATE',
@@ -64,18 +53,19 @@ class CreateValoriSenzoriTable extends Migration
         ]);
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('id_pacient', 'PACIENTI', 'id', '', '');
-        $this->forge->createTable('VALORI_SENZORI');
+        $this->forge->addForeignKey('id_doctor', 'DOCTORI', 'id', '', '');
+        $this->forge->createTable('RECOMANDARI');
         $this->db->query("
-            CREATE OR REPLACE TRIGGER TRIGGER_VALORI_SENZORI\r\n
-            BEFORE INSERT ON VALORI_SENZORI\r\n
+            CREATE OR REPLACE TRIGGER TRIGGER_RECOMANDARI\r\n
+            BEFORE INSERT ON RECOMANDARI\r\n
             FOR EACH ROW\r\n
             DECLARE NEW_ID NUMBER(20);\r\n
             BEGIN\r\n
-                SELECT COUNT(*) INTO NEW_ID FROM VALORI_SENZORI;\r\n
+                SELECT COUNT(*) INTO NEW_ID FROM RECOMANDARI;\r\n
                 IF NEW_ID = 0 THEN\r\n
                     :NEW.\"id\" := 0;\r\n
                 ELSE\r\n
-                    SELECT MAX(\"id\") INTO NEW_ID FROM VALORI_SENZORI;\r\n
+                    SELECT MAX(\"id\") INTO NEW_ID FROM RECOMANDARI;\r\n
                     :NEW.\"id\" := NEW_ID+1;\r\n
                 END IF;\r\n
             END;\r\n
@@ -84,6 +74,6 @@ class CreateValoriSenzoriTable extends Migration
 
     public function down()
     {
-        $this->forge->dropTable('VALORI_SENZORI');
+        $this->forge->dropTable('RECOMANDARI');
     }
 }

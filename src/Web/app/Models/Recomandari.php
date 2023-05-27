@@ -4,18 +4,16 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Administrator extends Model
+class Recomandari extends Model
 {
     protected $DBGroup          = 'default';
-    protected $table      = 'ADMINISTRATORI';
-    protected $primaryKey = 'id';
-
+    protected $table            = 'RECOMANDARI';
+    protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-
-    protected $returnType     = 'array';
-    protected $useSoftDeletes = true;
-
-    protected $allowedFields = ['id', 'parola', 'nume', 'prenume', 'cnp', 'localitate', 'judet', 'strada', 'bloc', 'scara', 'etaj', 'apartament', 'numar', 'telefon', 'email', 'created_at', 'updated_at', 'deleted_at'];
+    protected $returnType       = 'array';
+    protected $useSoftDeletes   = false;
+    protected $protectFields    = true;
+    protected $allowedFields    = ['id_pacient', 'id_doctor', 'tip', 'durata', 'alte_indicatii', 'created_at', 'updated_at', 'deleted_at'];
 
     // Dates
     protected $useTimestamps = false;
@@ -41,5 +39,3 @@ class Administrator extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 }
-
-?>

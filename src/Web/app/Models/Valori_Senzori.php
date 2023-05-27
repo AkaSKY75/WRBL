@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class Valori_Senzori extends Model
 {
+    protected $DBGroup          = 'default';
     protected $table      = 'VALORI_SENZORI';
     protected $primaryKey = 'id';
 
@@ -14,7 +15,7 @@ class Valori_Senzori extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['id_pacient', 'data', 'val_senzor_puls', 'val_senzor_temperatura', 'val_senzor_umiditate', 'val_senzor_ecg', 'created_at', 'updated_at', 'deleted_at'];
+    protected $allowedFields = ['id_pacient', 'val_senzor_puls', 'val_senzor_temperatura', 'val_senzor_umiditate', 'val_senzor_ecg', 'accelerometru_x', 'accelerometru_y', 'accelerometru_z', 'created_at', 'updated_at', 'deleted_at'];
 
     // Dates
     protected $useTimestamps = false;
