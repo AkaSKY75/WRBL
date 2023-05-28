@@ -37,7 +37,7 @@ void setup() {
   //memset(StrJSON, 0, 8066);
   //StrJSONIndex = 0;
   //strcpy(StrJSON, "{\"ecg\":\"")
-  StrJSON = "{\"ecg\":\"";
+  StrJSON = "{\"val_senzor_ecg\":\"";
 
   /* DHT */
   dht.begin();
@@ -98,13 +98,13 @@ void loop() {
   int ecg = (int)analogRead(A0);
   StrJSON = StrJSON + byteToAscii((unsigned char)((ecg >> 8) & 0x0F)) +byteToAscii((unsigned char)((ecg >> 4) & 0x0F)) + byteToAscii((unsigned char)(ecg & 0x0F));
   if(StrJSON.length() > 8066)
-    StrJSON = "{\"ecg\":\"";
+    StrJSON = "{\"val_senzor_ecg\":\"";
   //}
 	int myBPM = pulseSensor.getBeatsPerMinute();      // Calculates BPM
   if(bluetooth.available()) {
     while(bluetooth.available()) bluetooth.read();
     //StrJSON[i++] = '\"';
-    StrJSON = StrJSON + "\",\"puls\":\""+LastBPMRecorded + "\",\"umiditate\":\""+(float)dht.readHumidity()+"\",\"temperatura\":\""+(float)dht.readTemperature()+"\"}";
+    StrJSON = StrJSON + "\",\"val_senzor_puls\":\""+LastBPMRecorded + "\",\"val_senzor_umiditate\":\""+(float)dht.readHumidity()+"\",\"val_senzor_temperatura\":\""+(float)dht.readTemperature()+"\"}";
     for(auto &ch : StrJSON) {
       Serial.print(ch);
       bluetooth.print(ch);
