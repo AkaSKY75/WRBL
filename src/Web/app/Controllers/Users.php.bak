@@ -1,0 +1,693 @@
+<?php
+
+
+
+class Users extends CI_Controller {
+
+
+
+	function __construct()     
+
+	{         
+
+		parent::__construct();         
+		//print_r($this->session->userdata("isLoggedIn")); exit;
+		//if ($this->session->userdata("isLoggedIn")==false) redirect('login');
+
+		$this->load->model("common");
+
+		$this->load->model("users_model");		
+
+		$this->load->model("forms");
+
+		$this->load->model("info_pages");
+
+		$this->load->model("courses_model");	
+		
+		$this->load->library("pdf");
+
+	} 
+
+	
+
+	function index(){
+
+		$TITLE="Lista pacienti";
+		
+		$users=$this->users_model->get_all_users();
+
+		$CONTENT=$this->parser->parse("users/users", array("USERS"=>$users), true);
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		$this->parser->parse("template/full-width",$data);			
+
+	}
+
+	
+
+    function index1(){
+
+		$TITLE="Lista profesori";
+
+		$users=$this->users_model->get_all_users1();
+
+		
+
+		
+
+		$CONTENT=$this->parser->parse("users/users1", array("USERS"=>$users), true);
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		$this->parser->parse("template/full-width",$data);			
+
+	}
+
+	
+
+	
+
+    function adauga_student()	{	      
+
+               
+		$TITLE = "Adauga student nou";	
+
+
+		$CONTENT=$this->parser->parse('users/users_form',array(),TRUE);		
+
+	
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		$this->parser->parse("template/full-width",$data);	
+
+    	}
+
+	function adauga_profesor()	{	      
+
+               
+
+        //$courses=$this->db->get("lista_cursuri")->result();
+
+		$TITLE = "Adauga profesor nou";	
+
+        //print_r($TITLE); exit;
+
+		$CONTENT=$this->parser->parse('users/doc_form',array(),TRUE);		
+
+	
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		$this->parser->parse("template/full-width",$data);	
+
+    	}
+
+
+	function adauga_plata($cnp)	{	      
+
+		$TITLE = "Adauga plata noua";	
+		$CONTENT=$this->parser->parse('users/adauga_plata',array("cnp"=>$cnp),TRUE);		
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		$this->parser->parse("template/full-width",$data);	
+
+    	}
+		
+		
+		function adauga_plata_done($cnp)	{	      
+
+             $post=$this->forms->get_fields_original(array("cnp","suma","data"));  
+
+
+		if($this->db->insert("plati",$post))
+
+				$this->common->message_done("Plata adaugata!"); 
+
+			else
+
+				$this->common->message_error("A fost o problema la adaugare. va rugam sa incercati mai tarziu!");
+
+                redirect("users/view_profile/".$cnp);	
+
+    	}
+
+  function add_done(){
+
+          $post=$this->forms->get_fields_original(array("nume","prenume","localitate","telefon",
+
+          "CNP","data_nasterii"));
+
+			if($this->db->insert("studenti",$post))
+
+				$this->common->message_done("Student adaugat!"); 
+
+			else
+
+				$this->common->message_error("A fost o problema la adaugare. va rugam sa incercati mai tarziu!");
+
+                redirect("users");
+
+    }
+	function add_done1(){
+
+          $post=$this->forms->get_fields_original(array("nume","prenume","localitate","telefon",
+
+          "CNP","data_nasterii","grad_didactic"));
+
+			if($this->db->insert("profesori",$post))
+
+				$this->common->message_done("Profesor adaugat!"); 
+
+			else
+
+				$this->common->message_error("A fost o problema la adaugare. va rugam sa incercati mai tarziu!");
+
+                redirect("users");
+
+    }
+	function edit_done1($CNP){
+
+          $post=$this->forms->get_fields_original(array("nume","prenume","localitate","telefon",
+
+          "CNP","data_nasterii","id"));
+
+			print_r($post);
+
+			
+
+			if($this->db->update("studenti",$post,array('CNP' =>$CNP)))
+
+				$this->common->message_done("Datele au fost salvate!"); 
+
+			else
+
+				$this->common->message_error("A fost o problema la editare. va rugam sa incercati mai tarziu!");
+
+                redirect("users/view_profile/".$CNP);
+
+    }
+
+function edit_done($CNP){
+
+          $post=$this->forms->get_fields_original(array("nume","prenume","localitate","telefon",
+
+          "CNP","data_nasterii","grad_didactic"));
+
+			print_r($post);
+
+			
+
+			if($this->db->update("profesori",$post,array('CNP' =>$CNP)))
+
+				$this->common->message_done("Datele au fost salvate!"); 
+
+			else
+
+				$this->common->message_error("A fost o problema la editare. va rugam sa incercati mai tarziu!");
+
+                redirect("users/view_profile/".$CNP);
+
+    }
+	
+
+	function view_profile($cnp){
+
+		$TITLE = "Profil student";
+
+		$user=$this->users_model->get_student($cnp);
+
+		$user->CNP=$cnp;
+
+		$CONTENT=$this->parser->parse('users/profile',$user,TRUE);	
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	
+	function contul_meu(){
+
+		$TITLE = "Contul meu";
+		$cnp=2850911352067;
+		$user=$this->users_model->get_profesor($cnp);
+
+		//printf($user);
+
+			/*	switch($user->user_status){
+
+				case 0: $user->user_status='In curs';  break;
+
+				case 1: $user->user_status="Admis";  break;
+
+				case 2: $user->user_status="Respins";  break;
+
+				
+
+			}*/
+
+		
+
+		//print_r($user); exit;
+
+		$CONTENT=$this->parser->parse('users/contul_meu',$user,TRUE);	
+
+
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+
+
+function ekg($cnp){
+
+		$TITLE = "EKG pacient";
+
+		$user=$this->users_model->get_pacient($cnp);
+
+		
+
+			/*	switch($user->user_status){
+
+				case 0: $user->user_status='In curs';  break;
+
+				case 1: $user->user_status="Admis";  break;
+
+				case 2: $user->user_status="Respins";  break;
+
+				
+
+			}*/
+
+		$user->CNP=$cnp;
+
+		//print_r($user); exit;
+
+		$CONTENT=$this->parser->parse('users/ekg',$user,TRUE);	
+
+
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	function calendar(){
+
+		$TITLE = "Calendar";
+		$cnp="1350519251489";
+		$user=$this->users_model->get_pacient($cnp);
+		$user->CNP=$cnp;
+		
+
+			/*	switch($user->user_status){
+
+				case 0: $user->user_status='In curs';  break;
+
+				case 1: $user->user_status="Admis";  break;
+
+				case 2: $user->user_status="Respins";  break;
+
+				
+
+			}*/
+
+		
+
+		//print_r($user); exit;
+
+		$CONTENT=$this->parser->parse('users/calendar',$user,TRUE);	
+
+
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	
+	function senzori($cnp){
+
+		$TITLE = "Senzori pacient";
+
+		$user=$this->users_model->get_pacient($cnp);
+
+		
+
+			/*	switch($user->user_status){
+
+				case 0: $user->user_status='In curs';  break;
+
+				case 1: $user->user_status="Admis";  break;
+
+				case 2: $user->user_status="Respins";  break;
+
+				
+
+			}*/
+
+		$user->CNP=$cnp;
+
+		//print_r($user); exit;
+
+		$CONTENT=$this->parser->parse('users/senzori',$user,TRUE);	
+
+
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	
+function view_profile_doc($cnp){
+
+		$TITLE = "Profil profesor";
+
+		$user=$this->users_model->get_profesor($cnp);
+
+		
+
+		$courses=$this->courses_model->get_courses_by_prof($cnp);
+		$CONTENT=$this->parser->parse('users/profile_doc',$user,TRUE);	
+
+
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	
+function view_courses_prof($cnp){
+
+		$TITLE = "Profil profesor";
+
+		
+		$courses=$this->courses_model->get_courses_by_prof($cnp);
+		$CONTENT=$this->parser->parse('users/courses_prof',array("COURSES"=>$courses),TRUE);	
+
+
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	
+	function cursuri_student($cnp){
+
+		$TITLE = "Cursuri student";
+
+		
+		$courses=$this->courses_model->get_courses_by_student($cnp);
+		$CONTENT=$this->parser->parse('users/courses_student',array("COURSES"=>$courses),$cnp,TRUE);	
+
+
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	
+	function restante_student($cnp){
+
+		$TITLE = "Restante student";
+
+		
+		$courses=$this->courses_model->get_restante_by_student($cnp);
+		$CONTENT=$this->parser->parse('users/restante_student',array("COURSES"=>$courses),$cnp,TRUE);	
+
+
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	function chitante_student($cnp){
+
+		$TITLE = "Chitante student";
+	    $chitante=$this->courses_model->get_chitante_by_student($cnp);
+		$CONTENT=$this->parser->parse('users/chitante',array("CHITANTE"=>$chitante),$cnp,TRUE);	
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+		$this->parser->parse("template/full-width",$data);	
+
+	}
+	
+	function view_chitanta($id_plata){
+
+		$TITLE = "Chitante student";
+
+		
+		$chitante=$this->courses_model->get_chitanta_by_id($id_plata);	
+		$html = $this->load->view('users/GeneratePdfView', $chitante, true);
+        $this->pdf->createPDF($html, 'mypdf', false);
+
+		$this->load->view('users/pdfreport', $chitante);	
+
+	}
+	
+	function view_state_de_plata($cnp){
+
+		$TITLE = "Stat de plata";
+
+		
+		$chitante=$this->courses_model->get_stat_de_plata_by_cnp($cnp);
+	
+		$html = $this->load->view('users/GeneratePdfViewStatdeplata', $chitante, true);
+
+        $this->pdf->createPDF($html, 'mypdf', false);
+ 
+		$this->load->view('users/pdfreport', $chitante);	
+
+	}
+	
+	function edit($cnp){		
+
+		//print_r($id_cursant); exit;
+
+		$TITLE = "Editare student";
+
+		$user=$this->users_model->get_student($cnp);
+
+	
+
+		$CONTENT=$this->parser->parse('users/edit_users',$user,TRUE);		
+
+		
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);
+
+	}
+
+	//problema micuta
+
+	function edit_profesor($cnp){		
+
+	
+
+		$TITLE = "Editare profesor";
+
+		$user=$this->users_model->get_profesor($cnp);
+
+	
+
+		$CONTENT=$this->parser->parse('users/edit_users',$user,TRUE);		
+
+		
+
+		$data = array(
+
+				    	"TITLE"=>$TITLE,
+
+						"CONTENT"=>$CONTENT				
+
+					 );
+
+		
+
+		$this->parser->parse("template/full-width",$data);
+
+	}
+
+	
+
+	
+
+	function process($id_cursant){				
+
+			$post=$this->forms->get_fields_original(array("first_name","date", "last_name","adresa", "phone","cnp","nr_dosar","taxa","data_examen","reexaminare","user_status","id_lista_curs"));
+
+			switch($post['user_status']){
+
+				
+
+				case "Admis": $post['user_status']=1;  break;
+
+				case "Respins": $post['user_status']=2;  break;
+
+				case "In curs": $post['user_status']=0;  break;
+
+				
+
+			}	
+
+			//print_r($post); print_r($id_cursant); exit;
+
+			if($this->db->update("cursanti", $post,array('id_cursant' =>$id_cursant))){
+
+				
+
+			
+
+			
+
+			
+
+				$this->common->message_done("Cursantul a fost editat!"); 
+
+			}
+
+			else
+
+				$this->common->message_error("A aparut o eroare la salvare! Va rugam sa incercati mai tarziu!");			
+
+		redirect("users");
+
+	}
+
+	
+
+	function delete($id_cursant){
+
+		$this->users_model->delete_user($id_cursant);
+
+		redirect("users");
+
+	}
+
+}
+
+?>

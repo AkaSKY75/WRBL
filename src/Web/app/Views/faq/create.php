@@ -1,0 +1,50 @@
+<div class="row">
+
+<div class="col-md-12">
+
+
+  <div class="widget wgreen">
+	
+	<div class="widget-head">
+	  <div class="pull-left">Frequently Askwd Questions</div>
+	  <div class="widget-icons pull-right">
+		<a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a> 
+		<a href="#" class="wclose"><i class="fa fa-times"></i></a>
+	  </div>
+	  <div class="clearfix"></div>
+	</div>
+
+	<div class="widget-content">
+	  <div class="padd">
+
+		<br />
+		<!-- Form starts.  -->
+		 <form class="form-horizontal" role="form" method="post" action="{SITE_URL}/faq/create_done" enctype="multipart/form-data">		
+		 	<div class="form-group">
+					  <label class="col-lg-2 control-label">Question</label>
+					  <div class="col-lg-5">
+						<input type="text" class="form-control" placeholder="Question" id="faq_question" name="faq_question" required>
+					  </div>
+					</div>		
+						<div class="form-group">
+					  <label class="col-lg-2 control-label">Answer</label>
+					  <div class="col-lg-6">
+						<textarea class="cleditor" id="faq_answer" name="faq_answer" placeholder="Answer" ></textarea>
+					  </div>
+					</div>     
+			<div class="form-group">
+					  <div class="col-lg-5">
+							<input type="submit" name="project_fesave" class="project_fesave" value="Save">
+					  </div>
+					</div>
+		  </form>
+	  </div>
+	</div>
+	  <div class="widget-foot">
+		<!-- Footer goes here -->
+	  </div>
+  </div>  
+
+</div>
+
+</div>
