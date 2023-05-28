@@ -37,6 +37,10 @@ class CreateRecomandariTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => '255'
             ],
+            'state' => [
+                'type' => 'INT',
+                'constraint' => 1
+            ],
             'created_at' => [
                 'type' => 'DATE',
                 'default' => date('d-M-y')
