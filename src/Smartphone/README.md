@@ -4,7 +4,8 @@
 2. `npx create-expo-app app_name && cd app_name`
 3. `npx expo install react-native-bluetooth-classic with-rn-bluetooth-classic`
 4. `npx expo install expo-device`
-5. Create a file called `eas.json` and add to its content:
+5. `npx expo install crypto-es`
+6. Create a file called `eas.json` and add to its content:
 ```
 {
 	"build": {
@@ -19,7 +20,7 @@
 	}
 }
 ```
-6. Edit `app.json` file and add to `"plugins"` key the following:
+7. Edit `app.json` file and add to `"plugins"` key the following:
 ```
 "plugins": [
 	[
@@ -35,7 +36,7 @@
       ]
 ]
 ```
-7. `npx npm install eas-cli`
-8. `npx expo prebuild`
-9. `npx expo install expo-dev-client`
-10. `npx expo run:android`
+8. `npx npm install eas-cli`
+9. `npx expo prebuild`
+10. `npx expo install expo-dev-client`
+11. `npx expo run:android`

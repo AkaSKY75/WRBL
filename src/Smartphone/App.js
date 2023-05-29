@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Touchable, StyleSheet, PermissionsAndroid, Platform } from 'react-native';
-import useBluetooth from './useBluetooth';
 import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import * as ExpoDevice from "expo-device";
+import CryptoES from 'crypto-es';
 
 export default function Home() {
 
@@ -26,7 +26,26 @@ export default function Home() {
   Request permission for Android => We already have it in project from C:\Users\MPSAM\Documents\WRBL\Smartphone
   Implement scan and pair
 */
+  const APP_ID = "YzfeftUVcZ6twZw1OoVKPRFYTrGEg01Q";
+  const APP_SECRET = "4G91qSoboqYO4Y0XJ0LPPKIsq8reHdfa";
+  const makeAuthentication = (cnp, password) => {
+    const nonce = Math.random()
+      .toString(36)
+      .slice(5);
 
+    body = {
+        "appid": APP_ID,
+        "cnp": cnp,
+        //"password": crypto.createHash('sha256').update(password).digest('base64');
+        "password": CryptoES.SHA256(password).toString(CryptoES.enc.Hex),
+        "nonce": nonce  
+    };
+    
+    const hmac = CryptoES.HmacSHA256(JSON.stringify(body), APP_SECRET).toString(CryptoES.enc.Base64);
+    result = {}
+    result[hmac] = body;
+    console.log(result);
+  };
   const requestAndroid31Permissions = async () => {
     const bluetoothScanPermission = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
@@ -90,10 +109,8 @@ export default function Home() {
   }, []);
 
 
-  const { connection, setDevice, data, } = useBluetooth(onReceivedDataScan);
-
   useEffect(() => {
-    fetch('http://162.0.238.94/api', {
+    fetch('http://162.0.238.94/api/smartphone', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -104,11 +121,13 @@ export default function Home() {
         secondParam: 'yourOtherValue',
       }),
     }).then(function(response) {
+      console.log(response);
       response.body.getReader().read().then(function(stream) {
         console.log(stream.value);
       });
     });
     scanForDevices();
+    makeAuthentication('1700928416180', '12345');
   }, []);
 
   const getBondedDevices = async () => {
