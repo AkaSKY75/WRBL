@@ -7,6 +7,7 @@ use CodeIgniter\Model;
 class Administrator extends Model
 {
     protected $DBGroup          = 'default';
+    public $tip_user = 2;
     protected $table      = 'ADMINISTRATORI';
     protected $primaryKey = 'id';
 
@@ -15,7 +16,7 @@ class Administrator extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['id', 'parola', 'nume', 'prenume', 'cnp', 'localitate', 'judet', 'strada', 'bloc', 'scara', 'etaj', 'apartament', 'numar', 'telefon', 'email', 'created_at', 'updated_at', 'deleted_at'];
+    protected $allowedFields = ['parola', 'nume', 'prenume', 'cnp', 'localitate', 'judet', 'strada', 'bloc', 'scara', 'etaj', 'apartament', 'numar', 'telefon', 'email', 'created_at', 'updated_at', 'deleted_at'];
 
     // Dates
     protected $useTimestamps = false;

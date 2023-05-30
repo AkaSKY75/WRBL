@@ -42,8 +42,9 @@ class Welcome extends BaseController {
 
 		$data = array(
 				    	"TITLE"=>$TITLE,
-                        "CONTENT"=> $this->parser->setData($st)->render("template/dashboard")
-						//"CONTENT"=> $this->parser->parse("template/dashboard", $st)
+                        "CONTENT"=> $this->parser->setData($st)->render("template/dashboard"),
+						"BASE_URL" => base_url('assets')
+                        //"CONTENT"=> $this->parser->parse("template/dashboard", $st)
 					 );
 		
 		return $this->parser->setData($data)->render("template/full-width");			

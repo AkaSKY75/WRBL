@@ -2,19 +2,17 @@
 namespace App\Controllers; 
 class Admin extends BaseController {
 
-
-
+	protected $session;
+	protected $parser;
+	protected $userModel;
 	function __construct()     
-
 	{         
-
-		parent::__construct();  
 		//echo CI_VERSION;
 		//$this->load->model("session");		
 		//print_r($this->session->userdata("isLoggedIn")); exit;
 		//if ($this->session->userdata("isLoggedIn")==false) redirect('login');
 		//print_r($this->session->userdata("tip_user")); exit;
-		if ($this->session->userdata("tip_user")==1) redirect('pacient');
+		/*if ($this->session->userdata("tip_user")==1) redirect('pacient');
 		else if ($this->session->userdata("tip_user")==0) redirect('users');
 		$this->load->model("common");
 
@@ -24,23 +22,33 @@ class Admin extends BaseController {
 
 		$this->load->model("info_pages");
 
-		$this->load->model("courses_model");	
+		$this->load->model("courses_model");*/
 		
 		//$this->load->library("pdf");
 		
 		//$this->load->model("session");
-
+		$this->session = \Config\Services::session();
+        $this->parser = \Config\Services::parser();
+		$this->userModel = model('UserModel');
 	} 
 
 	
 
 	function index(){
-
+		if ($this->session->get('tip_user') != 2) {
+			//throw new \Exception("Admin");
+			return view('errors/html/error_404', ['message' => 'Sorry! Cannot seem to find the page you were looking for.']);
+		}
 		$TITLE="Lista medici";
 		
-		$users=$this->medici_model->get_all_medici();
+		$medici = $this->userModel->get_all_medici();		
 
-		$CONTENT=$this->parser->parse("medici/medici", array("USERS"=>$users), true);
+		$CONTENT = $this->parser->setData([
+			'USERS' => $medici,
+			'BASE_URL' => base_url()
+		])->render('medici/medici');
+
+		//$CONTENT=$this->parser->parse("medici/medici", array("USERS"=>$medici), true);
 
 		$data = array(
 
@@ -49,8 +57,9 @@ class Admin extends BaseController {
 						"CONTENT"=>$CONTENT				
 
 					 );
+		return htmlspecialchars_decode($this->parser->setData($data)->render('template/full-width-medici'));	
 
-		$this->parser->parse("template/full-width-medici",$data);			
+		//$this->parser->parse("template/full-width-medici",$data);	
 
 	}
 

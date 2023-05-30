@@ -3,11 +3,19 @@ namespace App\Controllers;
 //defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Login extends BaseController {
-	public $session;
-	public $parser;
+	protected $session;
+	protected $parser;
+	protected $userModel;
+	protected $redirect_routes;
 	public function __construct(){
 		$this->session = \Config\Services::session();
         $this->parser = \Config\Services::parser();
+		$this->userModel = model('UserModel');
+		$this->redirect_routes = [
+			0 => 'users',
+			1 => 'pacient',
+			2 => 'admin'
+		];
 		//$this->load->model("common");	
 		//$this->load->model("users_model");	
 		//$this->load->model("forms");		
@@ -15,7 +23,10 @@ class Login extends BaseController {
 	public function index()	{	  
         $TITLE = "Login";
 		
-		return $this->parser->setData(array(""))->render('login/login');		
+		return $this->parser->setData([
+			"BASE_URL" => base_url(),
+			"SITE_URL" => base_url()
+		])->render('login/login');		
 			
     }
     function inregistrare()	{	      
@@ -27,22 +38,27 @@ class Login extends BaseController {
 			
     	}
 
-      function done()	{	
-        $username = $this->input->post("username");
-        $password = $this->input->post("password");
+      function done()	{
+        $username = $this->request->getVar("username");
+        $password = $this->request->getVar("password");
         
-        $result = $this->users_model->login($username, $password);
+        $result = $this->userModel->try_login($username, $password);
 		//print_r($result); 
-        if( $username && $password && $result) {
-		
-          $this->common->message_done("Bine ati venit!");
+        if ($username && $password && $result) {
+			$this->session->set(['tip_user' => $result->tip_user]);
+			return redirect($this->redirect_routes[$result->tip_user]);
+
+          //$this->common->message_done("Bine ati venit!");
 		
 		  //print_r($this->session->userdata("tip_user")); exit;
-		 if ($this->session->userdata("tip_user")=='0') redirect('users');
+		 /*if ($this->session->userdata("tip_user")=='0') redirect('users');
           else if ($this->session->userdata("tip_user")=='1')  redirect('pacient'); 
-		     else  redirect('admin'); 
-        } //else print_r("xxx");
+		     else  redirect('admin');*/ 
+        } else {
+			throw new \Exception($username . " " . $password . " " . $result);
+			//redirect('login');
 		}
+	}
 
 function inregistrare_done(){
 

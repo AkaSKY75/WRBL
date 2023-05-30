@@ -31,6 +31,8 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 $routes->get('/', 'Welcome::index');
 $routes->get('/login', 'Login::index');
+$routes->get('/admin', 'Admin::index');
+$routes->post('/login/done', 'Login::done');
 $routes->post('/api/smartphone', 'API::GetDataFromSmartphone');
 $routes->post('/api/hl7/fhir', 'API::GetDataFromHL7FHIR');
 

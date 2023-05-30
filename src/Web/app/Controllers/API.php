@@ -144,6 +144,25 @@ class API extends BaseController
                 ]
               ]
             ];
+            $data = [
+              'parola' => hash('SHA256', '12345'),
+              'nume'    => 'nume0',
+              'prenume' => 'prenume0',
+              'cnp' => 'cnp0',
+              'localitate' => 'localitate0',
+              'judet' => 'judet0',
+              'strada' => 'strada0',
+              'bloc' => 'bloc0',
+              'scara' => 'scara0',
+              'etaj' => 0,
+              'apartament' => 0,
+              'numar' => '0',
+              'telefon' => '0123456789',
+              'email' => 'test0@test0.com'
+            ];
+            $Administratori = model('Administrator', false);
+            $admin = $Administratori->findall();
+            //$Administratori->insert($data);
             return $this->response
                         ->setStatusCode(ResponseInterface::HTTP_OK)
                         /*->setJSON([
@@ -151,26 +170,6 @@ class API extends BaseController
                         "data" => "",
                         "message" => "trimiterea a fost salvata"
                         ]);*/
-                        ->setJSON($observatie);
-      /*$data = [
-        'id' => self::$idx,
-        'parola' => hash('SHA256', '12345'),
-        'nume'    => 'nume'.self::$idx,
-        'prenume' => 'prenume'.self::$idx,
-        'cnp' => 'cnp'.self::$idx,
-        'localitate' => 'localitate'.self::$idx,
-        'judet' => 'judet'.self::$idx,
-        'strada' => 'strada'.self::$idx,
-        'bloc' => 'bloc'.self::$idx,
-        'scara' => 'scara'.self::$idx,
-        'etaj' => self::$idx,
-        'apartament' => self::$idx,
-        'numar' => ''.self::$idx,
-        'telefon' => '0754321753',
-        'email' => 'test'.self::$idx.'@test'.self::$idx.'.com'
-      ];
-      $Administratori = model('Administrator', false);
-      $Administratori->where('id', 0)->delete(0);
-      $Administratori->insert($data);*/
+                        ->setJSON($admin);
     }
 }
