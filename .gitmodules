@@ -1,0 +1,9 @@
+[submodule "src/Arduino"]
+	path = src/Arduino
+	url = https://github.com/MirceaAurelian/WRBL-Arduino
+[submodule "src/Smartphone"]
+	path = src/Smartphone
+	url = https://github.com/MirceaAurelian/WRBL-Smartphone
+[submodule "src/Web"]
+	path = src/Web
+	url = https://github.com/MirceaAurelian/WRBL-Web
